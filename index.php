@@ -24,6 +24,7 @@
 
 // Configuracion de contexto, URL y diseño de página.
 require_once('' . '../../config.php');
+require_once($CFG->dirroot . '/local/greetings/lib.php');
 
 $context = context_system::instance();
 $PAGE->set_context($context);
@@ -39,10 +40,13 @@ echo $OUTPUT->header();
 // Plantilla.
 if (isloggedin()) {
    // C echo '<h2>Greetings, '.fullname($USER) .'</h2>';
-   $usergreeting = 'Greetings, ' . fullname($USER) . '!';
+   // $usergreeting = 'Greetings, ' . fullname($USER) . '!';
+   //$usergreeting = get_string('greetingloggedinuser', 'local_greetings', fullname($USER));
+   $usergreeting = local_gretings_get_greeting($USER);
 } else {
    // C echo '<h2>Greetings, user</h2>';
-    $usergreeting = 'Greetings, user!';
+   // $usergreeting = 'Greetings, user!';
+   $usergreeting = get_string('greetinguser', 'local_greetings');
 }
 
 $templedata = ['usergreeting' => $usergreeting];

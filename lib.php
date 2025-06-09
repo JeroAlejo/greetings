@@ -21,17 +21,32 @@
  * @category    string
  * @copyright   2025 Jeremy jerevelasco8@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+*/
+ function local_gretings_get_greeting($user){
+    if($user == null){
+        return get_string('greetinguser', 'local_greetings');
+    }
 
-defined('MOODLE_INTERNAL') || die();
-
-$string['pluginname'] = 'Greetings';
-$string['greetingloggedinuser'] = 'Greetings , {$a}.';
-$string['greetinguser'] = 'Greetings, user.';
-
-$string['greetinguserau'] = 'Hello, {$a}.';
-$string['greetinguseres'] = 'Hola, {$a}.';
-$string['greetinguserec'] = 'Hola Ec, {$a}.';  // Saludo para Ecuador
-$string['greetinguserfj'] = 'Bula, {$a}.';
-$string['greetingusernz'] = 'Kia Ora, {$a}.';
-
+    $country = $user -> country;
+    switch ($country) {
+        case 'ES': // España
+            $langstr = 'greetinguseres';
+            break;
+        case 'EC': // Ecuador
+            $langstr = 'greetinguserec';
+            break;
+        case 'AU': // Australia
+            $langstr = 'greetinguserau';
+            break;
+        case 'FJ': // Fiji
+            $langstr = 'greetinguserfj';
+            break;
+        case 'NZ': // Nueva Zelanda
+            $langstr = 'greetingusernz';
+            break;
+        default:
+            $langstr = 'greetinguser';
+            break;
+    }
+    return get_string($langstr, 'local_greetings', fullname($user));
+ }
