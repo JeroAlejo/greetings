@@ -31,7 +31,7 @@ $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/greetings/index.php'));
 $PAGE->set_pagelayout('standard');
 // Titulo de la pagina - se muestra en la pestaña del navegador y en la pagina principal.
-$PAGE ->set_title(get_string('pluginname', 'local_greetings'));
+$PAGE->set_title(get_string('pluginname', 'local_greetings'));
 $PAGE->set_heading(get_string('pluginname', 'local_greetings'));
 
 // Generacion de Html basico.
@@ -39,16 +39,16 @@ echo $OUTPUT->header();
 // Mensaje de bienvenida al usuario. personalizado con el nombre del usuario.
 // Plantilla.
 if (isloggedin()) {
-   // C echo '<h2>Greetings, '.fullname($USER) .'</h2>';
-   // $usergreeting = 'Greetings, ' . fullname($USER) . '!';
-   //$usergreeting = get_string('greetingloggedinuser', 'local_greetings', fullname($USER));
-   $usergreeting = local_gretings_get_greeting($USER);
+    // C echo '<h2>Greetings, '.fullname($USER) .'</h2>';
+    // $usergreeting = 'Greetings, ' . fullname($USER) . '!';
+    // $usergreeting = get_string('greetingloggedinuser', 'local_greetings', fullname($USER));
+    $usergreeting = local_gretings_get_greeting($USER);
 } else {
-   // C echo '<h2>Greetings, user</h2>';
-   // $usergreeting = 'Greetings, user!';
-   $usergreeting = get_string('greetinguser', 'local_greetings');
+    // C echo '<h2>Greetings, user</h2>';
+    // $usergreeting = 'Greetings, user!';
+    $usergreeting = get_string('greetinguser', 'local_greetings');
 }
 
 $templedata = ['usergreeting' => $usergreeting];
 echo $OUTPUT->render_from_template('local_greetings/greeting_message', $templedata);
-echo $OUTPUT -> footer();
+echo $OUTPUT->footer();

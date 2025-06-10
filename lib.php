@@ -21,27 +21,27 @@
  * @category    string
  * @copyright   2025 Jeremy jerevelasco8@gmail.com
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-*/
- function local_gretings_get_greeting($user){
-    if($user == null){
+ */
+function local_gretings_get_greeting($user) {
+    if ($user == null) {
         return get_string('greetinguser', 'local_greetings');
     }
 
-    $country = $user -> country;
+    $country = $user->country;
     switch ($country) {
-        case 'ES': // España
+        case 'ES': // España.
             $langstr = 'greetinguseres';
             break;
-        case 'EC': // Ecuador
+        case 'EC': // Ecuador.
             $langstr = 'greetinguserec';
             break;
-        case 'AU': // Australia
+        case 'AU': // Australia.
             $langstr = 'greetinguserau';
             break;
-        case 'FJ': // Fiji
+        case 'FJ': // Fiji.
             $langstr = 'greetinguserfj';
             break;
-        case 'NZ': // Nueva Zelanda
+        case 'NZ': // Nueva Zelanda.
             $langstr = 'greetingusernz';
             break;
         default:
@@ -49,4 +49,17 @@
             break;
     }
     return get_string($langstr, 'local_greetings', fullname($user));
- }
+}
+
+ /*
+ *  Insert a link to index.php on the site front page navigation menu.
+ *  @param navigation_node $frontpage Node representing the front page in the navigation tree.
+  */
+
+function local_greetings_extend_navigation_frontpage(navigation_node $frontpage) {
+    $frontpage->add(
+        get_string('pluginname', 'local_greetings'),
+        new moodle_url('/local/greetings/index.php'),
+        navigation_node::TYPE_CUSTOM,
+    );
+}
