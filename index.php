@@ -1,4 +1,4 @@
-<?php 
+<?php
 // This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -34,6 +34,8 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('pluginname', 'local_greetings'));
 $PAGE->set_heading(get_string('pluginname', 'local_greetings'));
 
+// Crear instacia del formulario de mensaje.
+$messageform = new \local_greetings\form\message_form();
 // Generacion de Html basico.
 echo $OUTPUT->header();
 // Mensaje de bienvenida al usuario. personalizado con el nombre del usuario.
@@ -51,4 +53,13 @@ if (isloggedin()) {
 
 $templedata = ['usergreeting' => $usergreeting];
 echo $OUTPUT->render_from_template('local_greetings/greeting_message', $templedata);
+// Procesar el formulario.
+$messageform->display();
+if ($data = $messageform->get_data()) {
+    // Que datos se han enviado.
+    // var_dump($data);
+    $message = required_param('message', PARAM_TEXT);
+
+    echo $OUTPUT->heading($message, 4);
+}
 echo $OUTPUT->footer();
