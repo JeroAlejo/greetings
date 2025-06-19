@@ -55,11 +55,25 @@ $templedata = ['usergreeting' => $usergreeting];
 echo $OUTPUT->render_from_template('local_greetings/greeting_message', $templedata);
 // Procesar el formulario.
 $messageform->display();
+$messages = $DB->get_records('local_greetings_messages');
+// plantilla para mostrar los mensajes guardados.
+$templedata = ['messages' => array_values($messages)];
+echo $OUTPUT->render_from_template('local_greetings/messages', $templedata);
+
+
 if ($data = $messageform->get_data()) {
     // Que datos se han enviado.
     // var_dump($data);
     $message = required_param('message', PARAM_TEXT);
 
-    echo $OUTPUT->heading($message, 4);
+    if (!empty($message)) {
+        $record = new stdClass();
+        $record->message = $message;
+        $record->timecreated = time();
+        // Guardar el mensaje en la base de datos.
+        $DB->insert_record('local_greetings_messages', $record);
+    }
+    // echo $OUTPUT->heading($message, 4);
 }
+
 echo $OUTPUT->footer();
