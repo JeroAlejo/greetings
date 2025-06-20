@@ -55,7 +55,18 @@ $templedata = ['usergreeting' => $usergreeting];
 echo $OUTPUT->render_from_template('local_greetings/greeting_message', $templedata);
 // Procesar el formulario.
 $messageform->display();
-$messages = $DB->get_records('local_greetings_messages');
+// Mostrar mensajes guardados en la base de datos.
+// $messages = $DB->get_records('local_greetings_messages');
+$userfields = \core_user\fields::for_name()->with_identity($context);
+$userfieldssql=$userfields->get_sql('u');
+
+$sql = "SELECT m.id, m.message, m.timecreated, m.userid {$userfieldssql->selects}
+        FROM {local_greetings_messages} m
+        LEFT JOIN {user} u ON u.id = m.userid
+        ORDER BY m.timecreated DESC";
+
+$messages = $DB->get_records_sql($sql);
+
 // plantilla para mostrar los mensajes guardados.
 $templedata = ['messages' => array_values($messages)];
 echo $OUTPUT->render_from_template('local_greetings/messages', $templedata);
@@ -70,6 +81,7 @@ if ($data = $messageform->get_data()) {
         $record = new stdClass();
         $record->message = $message;
         $record->timecreated = time();
+        $record->userid = $USER->id;
         // Guardar el mensaje en la base de datos.
         $DB->insert_record('local_greetings_messages', $record);
     }
