@@ -33,9 +33,28 @@ $PAGE->set_pagelayout('standard');
 // Titulo de la pagina - se muestra en la pestaña del navegador y en la pagina principal.
 $PAGE->set_title(get_string('pluginname', 'local_greetings'));
 $PAGE->set_heading(get_string('pluginname', 'local_greetings'));
+// Autenticacion del usuario.
+require_login();
+if (isguestuser()) {
+    throw new moodle_exception('noguest');
+}
+// Tomamos Verificar si se tiene la capacidad de enviar mensajes o leer mensajes y Crear instacia del formulario de mensaje.
+$allowpost = has_capability('local/greetings:postmessages', $context);
+$allowview = has_capability('local/greetings:viewmessages', $context);
+$deleteanypost = has_capability('local/greetings:deletemessages', $context);
 
-// Crear instacia del formulario de mensaje.
 $messageform = new \local_greetings\form\message_form();
+// Para eliminar mensajes, si el usuario tiene permiso para eliminar mensajes.
+$action = optional_param('action', '', PARAM_TEXT);
+
+if ($action == 'del') {
+    $id = required_param('id', PARAM_INT);
+    // Verificar si el usuario tiene permiso para eliminar mensajes.
+    if ($deleteanypost) {
+         $DB->delete_records('local_greetings_messages', ['id' => $id]);
+    }
+}
+
 // Generacion de Html basico.
 echo $OUTPUT->header();
 // Mensaje de bienvenida al usuario. personalizado con el nombre del usuario.
@@ -53,26 +72,34 @@ if (isloggedin()) {
 
 $templedata = ['usergreeting' => $usergreeting];
 echo $OUTPUT->render_from_template('local_greetings/greeting_message', $templedata);
-// Procesar el formulario.
-$messageform->display();
+// Procesar el formulario de mensaje si el usuario tiene permiso para enviar mensajes.
+if ($allowpost) {
+    $messageform->display();
+}
 // Mostrar mensajes guardados en la base de datos.
 // $messages = $DB->get_records('local_greetings_messages');
-$userfields = \core_user\fields::for_name()->with_identity($context);
-$userfieldssql=$userfields->get_sql('u');
+if ($allowview) {
+    $userfields = \core_user\fields::for_name()->with_identity($context);
+    $userfieldssql = $userfields->get_sql('u');
 
-$sql = "SELECT m.id, m.message, m.timecreated, m.userid {$userfieldssql->selects}
-        FROM {local_greetings_messages} m
-        LEFT JOIN {user} u ON u.id = m.userid
-        ORDER BY m.timecreated DESC";
+    $sql = "SELECT m.id, m.message, m.timecreated, m.userid {$userfieldssql->selects}
+            FROM {local_greetings_messages} m
+            LEFT JOIN {user} u ON u.id = m.userid
+            ORDER BY m.timecreated DESC";
 
-$messages = $DB->get_records_sql($sql);
+    $messages = $DB->get_records_sql($sql);
 
-// plantilla para mostrar los mensajes guardados.
-$templedata = ['messages' => array_values($messages)];
-echo $OUTPUT->render_from_template('local_greetings/messages', $templedata);
-
+    // Plantilla para mostrar los mensajes guardados.
+    $templedata = [
+        'messages' => array_values($messages),
+        'candeleteany' => $deleteanypost,
+    ];
+    echo $OUTPUT->render_from_template('local_greetings/messages', $templedata);
+}
 
 if ($data = $messageform->get_data()) {
+    // Si el formulario se ha enviado y el usuario tiene permiso para enviar mensajes.
+    require_capability('local/greetings:postmessages', $context);
     // Que datos se han enviado.
     // var_dump($data);
     $message = required_param('message', PARAM_TEXT);

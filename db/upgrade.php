@@ -27,11 +27,11 @@
  * @param int $oldversion Version number the plugin is being upgraded from.
  */
 
- function xmldb_local_greetings_upgrade($oldversion) {
+function xmldb_local_greetings_upgrade($oldversion) {
     global $DB;
     $dbman = $DB->get_manager(); // Loads database manager.
 
-        if ($oldversion < 2025053002) {
+    if ($oldversion < 2025053002) {
 
         // Define field userid to be added to local_greetings_messages.
         $table = new xmldb_table('local_greetings_messages');
@@ -42,7 +42,7 @@
             $dbman->add_field($table, $field);
         }
 
-        //Segunda adicion .
+        // Segunda adicion.
 
         // Define key greetings-user-foreign-key (foreign) to be added to local_greetings_messages.
         $table = new xmldb_table('local_greetings_messages');
@@ -52,8 +52,8 @@
         $dbman->add_key($table, $key);
 
         // Greetings savepoint reached.
-        upgrade_plugin_savepoint(true,2025053002, 'local', 'greetings');
+        upgrade_plugin_savepoint(true, 2025053002, 'local', 'greetings');
     }
 
     return true; // No upgrade steps defined yet, so return true.
- }
+}
