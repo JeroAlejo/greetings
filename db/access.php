@@ -42,11 +42,20 @@ $capabilities = [
     ],
     // Capacidad para eliminar mensajes.
     'local/greetings:deletemessages' => [
+    'riskbitmask' => RISK_DATALOSS,		
     'captype' => 'write',
     'contextlevel' => CONTEXT_SYSTEM,
     'archetypes' => [
           'manager' => CAP_ALLOW,
           'admin' => CAP_ALLOW,
+    ],
+    ],
+	// Capacidad para eliminar mensajes propios.
+    'local/greetings:deleteownmessages' => [
+    'captype' => 'write',
+	'contextlevel' => CONTEXT_SYSTEM,
+	'archetypes' => [
+		  'user' => CAP_ALLOW,		
     ],
     ],
 ];

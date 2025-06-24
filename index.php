@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -38,10 +39,11 @@ require_login();
 if (isguestuser()) {
     throw new moodle_exception('noguest');
 }
-// Tomamos Verificar si se tiene la capacidad de enviar mensajes o leer mensajes y Crear instacia del formulario de mensaje.
+// Tomamos Verificar si se tiene la capacidad de crear, eliminar, enviar y leer mensajes y Crear instacia del formulario de mensaje.
 $allowpost = has_capability('local/greetings:postmessages', $context);
 $allowview = has_capability('local/greetings:viewmessages', $context);
 $deleteanypost = has_capability('local/greetings:deletemessages', $context);
+$deletepost = has_capability('local/greetings:deleteownmessages', $context);
 
 $messageform = new \local_greetings\form\message_form();
 // Para eliminar mensajes, si el usuario tiene permiso para eliminar mensajes.
@@ -49,9 +51,17 @@ $action = optional_param('action', '', PARAM_TEXT);
 
 if ($action == 'del') {
     $id = required_param('id', PARAM_INT);
-    // Verificar si el usuario tiene permiso para eliminar mensajes.
-    if ($deleteanypost) {
-         $DB->delete_records('local_greetings_messages', ['id' => $id]);
+    // Verificar si el usuario tiene permiso para eliminar mensajes o propios.
+    if ($deleteanypost || $deleteanypost) {
+
+        $params = ['id' => $id];
+
+        // Para usuarios eliminar sus propios mensajes.
+        if (!$deleteanypost) {
+            $params += ['userid' => $USER->id];
+        }
+
+         $DB->delete_records('local_greetings_messages', ['id' => $params]);
     }
 }
 
@@ -89,10 +99,15 @@ if ($allowview) {
 
     $messages = $DB->get_records_sql($sql);
 
+    // Agregamos un campo para saber si el usuario puede eliminar el mensaje.
+    foreach ($messages as $m) {
+        $m->candelete = ($deleteanypost || ($deletepost && $m->userid == $USER->id));
+    }
+
     // Plantilla para mostrar los mensajes guardados.
     $templedata = [
         'messages' => array_values($messages),
-        'candeleteany' => $deleteanypost,
+        // 'candeleteany' => $deleteanypost,
     ];
     echo $OUTPUT->render_from_template('local_greetings/messages', $templedata);
 }
