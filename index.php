@@ -60,8 +60,7 @@ if ($action == 'del') {
         if (!$deleteanypost) {
             $params += ['userid' => $USER->id];
         }
-
-         $DB->delete_records('local_greetings_messages', ['id' => $params]);
+         $DB->delete_records('local_greetings_messages', $params);
     }
 }
 
