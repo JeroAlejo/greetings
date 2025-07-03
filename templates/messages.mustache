@@ -11,7 +11,12 @@
             </p>
             {{#candelete}}
             <p class="card-footer text center">
-                <a href="{{config.wwwroot}}/local/greetings/index.php?action=del&id={{id}}">
+            <!-- Link to delete the message 
+            No se recomienda usar el enlace de eliminar directamente en la plantilla,
+            No usar el sseskey directamente en la plantilla por seguridad.
+            Se visualiza en el navegador y puede ser modificado por el usuario.
+            -->
+                <a href="{{config.wwwroot}}/local/greetings/index.php?action=del&id={{id}}&sesskey={{config.sesskey}}">
                     {{#pix}} t/delete {{/pix}}{{#str}} delete {{/str}}
                 </a>
             </p>

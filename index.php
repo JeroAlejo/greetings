@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - https://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -50,6 +49,8 @@ $messageform = new \local_greetings\form\message_form();
 $action = optional_param('action', '', PARAM_TEXT);
 
 if ($action == 'del') {
+
+    require_sesskey();
     $id = required_param('id', PARAM_INT);
     // Verificar si el usuario tiene permiso para eliminar mensajes o propios.
     if ($deleteanypost || $deleteanypost) {
@@ -61,6 +62,9 @@ if ($action == 'del') {
             $params += ['userid' => $USER->id];
         }
          $DB->delete_records('local_greetings_messages', $params);
+        // Redireccionar a la pagina principal del plugin para no ver la sesskey.
+        // Lo ideal es usar una solicitud POST para eliminar mensajes, pero en este caso se usa GET para simplificar.
+        redirect($PAGE->url);
     }
 }
 
